@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="master.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto&family=Arima:wght@100..700&family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bitter:ital,wght@0,100..900;1,100..900&family=DM+Serif+Text:ital@0;1&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Parkinsans:wght@300..800&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Tektur:wght@400..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/fontello.css">
+    <title>Calculator</title>
+</head>
+<body>
+    <div class="me">
+        <h1 >Mohadese zare
+            <ul>
+                <li><span class="icon-instagram-1"></span>Mohaddeseh.dev</li>
+                <li><span class="icon-linkedin"></span>Mohadsezare_web</li>
+                <li><span class="icon-github-circled"></span>Mohadsezare_web</li>
+            </ul>
+        </h1>
+    </div>
+    <div class="Calculator">
+        <input type="text" class="display" id="display" disabled placeholder="0">
+        <div class="buttons">
+            <button class="oprator clear" onclick="clearDisplay()">C</button>
+            <button class="oprator delete" onclick="deleteLast()">DEL</button>
+            <button class="oprator" onclick="appendNumber('.')">.</button>
+            <button class="oprator" onclick="appendOperator('/')">/</button>
+        </div>
+        <div>
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="oprator" onclick="appendOperator('*')">*</button>
+        </div>
+        <div>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="oprator" onclick="appendOperator('-')">-</button>
+        </div>
+        <div>
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="oprator" onclick="appendOperator('+')">+</button>
+        </div>
+        <div>
+            <button onclick="appendNumber('0')">0</button>
+            <button  onclick="appendPercentage()">%</button>
+            <button class="equalbtn equals" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+</body>
+
+<script>
+    let display = document.getElementById("display");
+
+    function appendNumber(number) {
+        display.value += number;
+    }
+
+    function appendOperator(operator) {
+        let lastChar = display.value.slice(-1);
+        if (display.value !== "" && !isNaN(lastChar)) {
+            display.value += " " + operator + " ";
+        }
+    }
+
+    function clearDisplay() {
+        display.value = "";
+    }
+
+    function deleteLast() {
+        display.value = display.value.trim().slice(0, -1);
+    }
+
+    function appendPercentage() {
+        let tokens = display.value.split(" ");
+        let lastToken = tokens[tokens.length - 1];
+
+        if (!isNaN(lastToken) && lastToken !== "") {
+            tokens[tokens.length - 1] = (parseFloat(lastToken) / 100).toString();
+            display.value = tokens.join(" ");
+        }
+    }
+
+    function calculateResult() {
+        let tokens = display.value.split(" ");
+        if (tokens.length < 3) return;
+
+        let numbers = [];
+        let operators = [];
+
+        function applyOperation() {
+            let b = numbers.pop();
+            let a = numbers.pop();
+            let op = operators.pop();
+            switch (op) {
+                case "+": numbers.push(a + b); break;
+                case "-": numbers.push(a - b); break;
+                case "*": numbers.push(a * b); break;
+                case "/": numbers.push(a / b); break;
+            }
+        }
+
+        for (let token of tokens) {
+            if (!isNaN(token)) {
+                numbers.push(parseFloat(token));
+            } else {
+                while (
+                    operators.length &&
+                    (token === "+" || token === "-") &&
+                    (operators[operators.length - 1] === "*" || operators[operators.length - 1] === "/")
+                ) {
+                    applyOperation();
+                }
+                operators.push(token);
+            }
+        }
+
+        while (operators.length) {
+            applyOperation();
+        }
+
+        display.value = numbers[0];
+    }
+</script>
+</html>
